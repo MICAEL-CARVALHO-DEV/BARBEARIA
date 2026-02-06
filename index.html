@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberShop | Agendamento</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <button id="btn-logout-global" onclick="logout()" style="display:none;">🚪</button>
+    <div class="main-container">
+       <header><div class="logo">BARBER<span>SHOP</span></div></header>
+
+        <section id="tela-login" class="card">
+            <h2>✂️ Bem-vindo</h2>
+            <p>Entre para agendar seu horário</p>
+            <div class="input-group">
+                <input type="text" id="login-nome" placeholder="Seu Nome">
+                <input type="tel" id="login-tel" placeholder="Seu WhatsApp">
+            </div>
+            <button onclick="fazerLogin()" class="btn-confirmar">Entrar no Sistema</button>
+        </section>
+
+        <section id="tela-agendamento" class="card" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div>
+                <span id="user-display-name" style="font-weight:bold; color:var(--primary); display:block;"></span>
+            </div>
+            <button onclick="toggleHistorico()" style="background:#333; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">Meus Cortes</button>
+        </div>
+
+<h3 style="text-align:left;">✂️ Escolha o Serviço</h3>
+<div id="lista-servicos-cliente" class="servicos-cliente-grid"></div>
+
+<h3 style="text-align:left;">📅 Escolha o Dia</h3>
+<div id="calendario" class="calendar-grid"></div>
+
+<h3 style="text-align:left; margin-top:15px;">⏰ Horário</h3>
+<div id="grade-horarios" class="time-grid"></div>
+
+            <select id="metodo-pagamento" style="width:100%; padding:12px; margin-top:20px; background:#000; color:white; border:1px solid #333; border-radius:8px;">
+                <option value="Presencial">💵 Pagar na Barbearia</option>
+                <option value="Pix">📱 Pagar via Pix</option>
+            
+            </select>
+
+            <button class="btn-confirmar" onclick="confirmarAgendamento()">🚀 Finalizar Agendamento</button>
+        </section>
+
+        <section id="tela-pix" class="card" style="display:none;">
+            <h2 style="color:var(--success)">✅ Confirmado!</h2>
+            <p>Seu horário está reservado.</p>
+            <button onclick="enviarWhatsappConfirmacao()" class="btn-whatsapp">Avisar no WhatsApp</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:#888; margin-top:15px; text-decoration:underline; cursor:pointer;">Voltar</button>
+        </section>
+    </div>
+
+    <div id="conteudo-historico" class="hist-oculto">
+        <h2>Seu Histórico</h2>
+        <div id="lista-animada-hist"></div>
+        <button onclick="toggleHistorico()" class="btn-confirmar">Voltar</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

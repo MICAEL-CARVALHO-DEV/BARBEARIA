@@ -1,0 +1,102 @@
+/* VARIÁVEIS GLOBAIS */
+:root { 
+    --primary: #d4af37; 
+    --bg: #0a0a0a; 
+    --card: #1a1a1a; 
+    --success: #28a745; 
+    --danger: #c0392b; 
+    --text: #f4f4f4; 
+}
+
+/* RESET E BASE */
+body { 
+    background: var(--bg); 
+    color: var(--text); 
+    font-family: 'Roboto', sans-serif; 
+    margin: 0; 
+    min-height: 100vh;
+}
+
+/* ============================================================
+   ESTILO DO CLIENTE (INDEX.HTML)
+   ============================================================ */
+body:not(.admin-body) {
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+.main-container { width: 100%; max-width: 420px; padding: 15px; }
+
+.logo { font-family: 'Oswald'; font-size: 2.2rem; text-align: center; margin-bottom: 20px; }
+.logo span { color: var(--primary); }
+
+.card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; margin-bottom: 20px; }
+
+.input-group input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+
+.btn-confirmar { background: var(--primary); color: black; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+.btn-whatsapp { background: #25d366; color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+
+/* GRIDS DE AGENDAMENTO */
+.servicos-cliente-grid { display: grid; gap: 10px; margin-bottom: 20px; }
+.srv-item-cliente { background: #222; border: 1px solid #333; border-radius: 12px; padding: 15px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+.srv-item-cliente.selecionado { border-color: var(--primary); background: #2a2410; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas para não apertar o texto */
+    gap: 10px;
+    margin-top: 10px;
+}
+.day { background: #222; padding: 10px 0; border-radius: 5px; font-size: 0.8rem; cursor: pointer; text-align: center; border: 1px solid transparent; }
+.day.selecionado { background: var(--primary); color: black; font-weight: bold; }
+
+.time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.time-slot { background: #333; padding: 10px 0; border-radius: 5px; font-size: 0.75rem; cursor: pointer; text-align: center; }
+.time-slot.selecionado { background: var(--success); color: white; }
+
+/* HISTÓRICO CLIENTE */
+.hist-oculto { position: fixed; top: 0; left: 100%; width: 100%; height: 100%; background: var(--bg); z-index: 2000; padding: 25px; transition: 0.4s; box-sizing: border-box; overflow-y: auto; }
+.hist-oculto.ativo { left: 0; }
+
+/* ============================================================
+   ESTILO DO ADMINISTRADOR (ADMIN.HTML)
+   ============================================================ */
+.admin-body { padding-top: 80px; display: block; }
+
+.admin-nav { background: #111; display: flex; justify-content: center; gap: 10px; padding: 15px; border-bottom: 1px solid #333; position: fixed; top: 0; width: 100%; z-index: 1000; left: 0;}
+.admin-nav button { background: #222; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+
+.dashboard-container { max-width: 500px; margin: 0 auto; padding: 15px; }
+.stats-row { display: flex; gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--card); flex: 1; padding: 15px; border-radius: 12px; text-align: center; border-bottom: 3px solid var(--primary); }
+
+.progress-bar { background: #333; height: 10px; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+.progress-fill { background: var(--success); height: 100%; transition: 0.5s; }
+
+.cliente-item { background: #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
+
+#btn-logout-global {
+    position: fixed; /* Fixado para não sumir no scroll */
+    top: 20px;
+    right: 20px;
+    background: #1a1a1a; /* Fundo escuro igual aos cards */
+    border: 1px solid var(--primary); /* Borda dourada para combinar */
+    font-size: 1.5rem;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+#btn-logout-global:hover {
+    background: var(--danger);
+    transform: scale(1.1);
+}

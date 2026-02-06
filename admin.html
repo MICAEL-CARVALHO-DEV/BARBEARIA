@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barber Admin | Gestão Master</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+<nav class="admin-nav">
+    <button onclick="showTab('agenda')">📅 Agenda</button>
+    <button onclick="showTab('servicos')">✂️ Serviços</button>
+    <button onclick="showTab('financeiro')">💰 Caixa</button>
+</nav>
+
+<div class="dashboard-container">
+    <section id="tab-agenda" class="tab-content">
+        <header style="margin-bottom: 20px; text-align: center;">
+            <div class="logo" style="font-family: 'Oswald'; font-size: 2rem;">BARBER<span>CONTROL</span></div>
+            <div id="data-atual-topo" style="opacity: 0.6; font-size: 0.9rem;"></div>
+        </header>
+
+        <section class="card-admin meta-container">
+            <div class="meta-info">
+                <span>Meta do Dia: <strong>R$ 300,00</strong></span>
+                <span id="porcentagem-meta">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div id="fill-meta" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </section>
+
+        <section class="stats-row">
+            <div class="stat-card"><span id="faturamento-dia">R$ 0</span><p>Ganhos Hoje</p></div>
+            <div class="stat-card"><span id="total-cortes-stats">0</span><p>Atendimentos</p></div>
+        </section>
+
+        <section class="card-admin">
+            <h3>📅 Histórico Mensal</h3>
+            <div id="calendario-trabalho" class="calendar-grid"></div>
+        </section>
+
+        <section class="agenda-section">
+            <h3>🚀 Próximos Clientes</h3>
+            <div id="lista-agendamentos-admin"></div>
+        </section>
+    </section>
+
+    <section id="tab-servicos" class="tab-content" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h3>✂️ Meus Serviços</h3>
+            <button class="btn-add" onclick="abrirModalServico()" style="background:var(--primary); border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">+ Novo</button>
+        </div>
+        <div id="lista-servicos-admin"></div>
+    </section>
+
+    <section id="tab-financeiro" class="tab-content" style="display:none;">
+        <h3>💰 Caixa do Dia</h3>
+        <div class="finance-grid">
+            <div class="finance-card"><p>💵 Dinheiro</p><h4 id="valor-dinheiro">R$ 0,00</h4></div>
+            <div class="finance-card"><p>📱 Pix</p><h4 id="valor-pix">R$ 0,00</h4></div>
+            <div class="finance-card"><p>💳 Cartão</p><h4 id="valor-cartao">R$ 0,00</h4></div>
+        </div>
+        <div class="total-geral">
+            <h3>Total: <span id="total-geral-caixa">R$ 0,00</span></h3>
+            <button class="btn-cancel" onclick="zerarDados()" style="margin-top:15px; width: 100%;">Zerar Caixa</button>
+        </div>
+        <div id="historico-financeiro-lista" style="margin-top:20px;"></div>
+    </section>
+</div>
+
+<div id="modal-servico" class="overlay-login" style="display:none;">
+    <div class="card-modal">
+        <h3>Novo Serviço</h3>
+        <input type="text" id="srv-nome" placeholder="Nome do Serviço">
+        <input type="number" id="srv-preco" placeholder="Preço (Ex: 35)">
+        <button class="btn-save" onclick="salvarServico()">Salvar</button>
+        <button class="btn-cancel" onclick="fecharModalServico()" style="margin-top:10px;">Cancelar</button>
+    </div>
+</div>
+
+<script src="admin-app.js"></script>
+</body>
+</html>
