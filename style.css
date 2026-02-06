@@ -965,3 +965,212 @@ body {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Visual polish and motion layer */
+.flow-card,
+.list-card,
+.kpi-card,
+.report-card,
+.select-card,
+.barber-card,
+.nav-btn {
+  transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.flow-card:hover,
+.list-card:hover,
+.kpi-card:hover,
+.report-card:hover,
+.select-card:hover,
+.barber-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.btn-primary:active,
+.btn-outline:active,
+.btn-ghost:active,
+.btn-whatsapp:active,
+.select-card:active,
+.barber-card:active,
+.slot-btn:active,
+.nav-btn:active {
+  transform: scale(0.98);
+}
+
+.stagger-item {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: staggerIn 0.38s ease forwards;
+  animation-delay: calc(var(--stagger-index, 0) * 48ms);
+}
+
+@keyframes staggerIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-tab {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: tabEnter 0.34s ease forwards;
+}
+
+@keyframes tabEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton-card {
+  height: 74px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0.04) 8%,
+    rgba(255, 255, 255, 0.1) 18%,
+    rgba(255, 255, 255, 0.04) 33%
+  );
+  background-size: 220% 100%;
+  animation: skeletonShimmer 1.2s linear infinite;
+}
+
+@keyframes skeletonShimmer {
+  to {
+    background-position-x: -220%;
+  }
+}
+
+.float-soft {
+  animation: floatSoft 4.6s ease-in-out infinite;
+}
+
+@keyframes floatSoft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-item,
+  .fade-in,
+  .float-soft,
+  .admin-tab,
+  .skeleton-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* Motion and loading refinements */
+.module-card {
+  position: relative;
+}
+
+.module-card.panel-loading {
+  opacity: 0.72;
+  pointer-events: none;
+  filter: saturate(0.88);
+}
+
+.admin-tab {
+  position: relative;
+}
+
+.admin-tab.tab-loading {
+  pointer-events: none;
+  opacity: 0.68;
+}
+
+.admin-tab.tab-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.8) 35%, transparent 70%);
+  animation: tabLoaderSweep 0.9s linear infinite;
+}
+
+@keyframes tabLoaderSweep {
+  from { transform: translateX(-40%); }
+  to { transform: translateX(60%); }
+}
+
+.slot-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.slot-label {
+  display: inline-block;
+}
+
+.slot-check {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.18);
+  color: #17120b;
+  font-size: 0.64rem;
+  line-height: 15px;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.7) translateY(1px);
+}
+
+.slot-btn.is-selected {
+  animation: slotPulse 0.42s ease;
+}
+
+.slot-btn.is-selected .slot-check {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  animation: slotCheckIn 0.24s ease;
+}
+
+@keyframes slotPulse {
+  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.45); }
+  100% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+}
+
+@keyframes slotCheckIn {
+  0% { opacity: 0; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.success-card.success-pop {
+  animation: successPop 0.34s ease;
+}
+
+@keyframes successPop {
+  0% { transform: scale(0.98); opacity: 0.85; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.kpi-card strong,
+.mini-kpi strong,
+.goal-ring,
+.goal-ring span,
+.bar-fill {
+  transition: all 0.45s ease;
+}

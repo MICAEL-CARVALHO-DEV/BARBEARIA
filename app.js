@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:5000";
+﻿const API_BASE_URL = "http://127.0.0.1:5000";
 
 const STORAGE_KEYS = {
   services: "barbersaas_services",
@@ -127,6 +127,62 @@ const DataStore = {
     localStorage.setItem(key, JSON.stringify(value));
   }
 };
+
+function renderSkeleton(containerId, count = 3) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = `<div class="skeleton-stack">${Array.from({ length: count }).map(() => "<div class='skeleton-card'></div>").join("")}</div>`;
+}
+
+function applyStagger(container, itemSelector) {
+  if (!container) return;
+  container.querySelectorAll(itemSelector).forEach((item, index) => {
+    item.classList.add("stagger-item");
+    item.style.setProperty("--stagger-index", `${index}`);
+  });
+}
+
+function animateMetric(target, value, formatter, duration = 650) {
+  const element = typeof target === "string" ? document.getElementById(target) : target;
+  if (!element) return;
+
+  const safeValue = Number(value || 0);
+  const startValue = Number(element.dataset.metricValue || 0);
+  const startAt = performance.now();
+
+  const tick = (now) => {
+    const progress = Math.min((now - startAt) / duration, 1);
+    const eased = 1 - ((1 - progress) ** 3);
+    const current = startValue + ((safeValue - startValue) * eased);
+    element.textContent = formatter(current);
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+      return;
+    }
+    element.dataset.metricValue = `${safeValue}`;
+  };
+
+  requestAnimationFrame(tick);
+}
+
+function applyModuleLoading(moduleId, duration = 220) {
+  const module = document.getElementById(moduleId);
+  if (!module) return;
+  module.classList.add("panel-loading");
+  window.setTimeout(() => module.classList.remove("panel-loading"), duration);
+}
+
+function applyFloatBrand() {
+  document.querySelectorAll(".brand").forEach((brand) => brand.classList.add("float-soft"));
+}
+
+function showBootstrapSkeletons() {
+  renderSkeleton("service-list", 3);
+  renderSkeleton("barber-list", 3);
+  renderSkeleton("history-list", 3);
+  renderSkeleton("barber-day-list", 4);
+  renderSkeleton("barber-reviews", 3);
+}
 
 function parseApiMode() {
   const params = new URLSearchParams(window.location.search);
@@ -417,6 +473,8 @@ function renderServices() {
     `;
   }).join("");
 
+  applyStagger(container, ".select-card");
+
   container.querySelectorAll("[data-service-id]").forEach((button) => {
     button.addEventListener("click", () => {
       state.selectedServiceId = button.getAttribute("data-service-id");
@@ -450,6 +508,8 @@ function renderBarbers() {
       </button>
     `;
   }).join("");
+
+  applyStagger(container, ".barber-card");
 
   container.querySelectorAll("[data-barber-id]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -490,6 +550,8 @@ function renderCalendar() {
     });
     container.appendChild(card);
   }
+
+  applyStagger(container, ".date-pill");
 }
 
 function renderSlotGroup(containerId, slots) {
@@ -511,10 +573,13 @@ function renderSlotGroup(containerId, slots) {
     const selectedClass = time === state.selectedTime ? "is-selected" : "";
     return `
       <button class="slot-btn ${selectedClass}" data-time="${time}" ${available ? "" : "disabled"}>
-        ${time}
+        <span class="slot-label">${time}</span>
+        <span class="slot-check" aria-hidden="true">&#10003;</span>
       </button>
     `;
   }).join("");
+
+  applyStagger(container, ".slot-btn");
 
   container.querySelectorAll("[data-time]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -566,7 +631,7 @@ function renderClientHistory() {
   historyList.innerHTML = appointments.map((appointment) => {
     const canReview = appointment.status === "completed" && !Number.isFinite(appointment.rating);
     const stars = Number.isFinite(appointment.rating)
-      ? `<p class='muted'>Avaliacao: ${"★".repeat(appointment.rating)}${"☆".repeat(5 - appointment.rating)}</p>`
+      ? `<p class='muted'>Avaliacao: ${"&#9733;".repeat(appointment.rating)}${"&#9734;".repeat(5 - appointment.rating)}</p>`
       : "";
     return `
       <article class="list-card">
@@ -580,7 +645,7 @@ function renderClientHistory() {
         ${canReview ? `
           <div class="review-area">
             <div class="star-row" data-review-stars="${appointment.id}">
-              ${[1, 2, 3, 4, 5].map((star) => `<button type="button" class="star-btn" data-rate="${star}" data-appointment="${appointment.id}">★</button>`).join("")}
+              ${[1, 2, 3, 4, 5].map((star) => `<button type="button" class="star-btn" data-rate="${star}" data-appointment="${appointment.id}">&#9733;</button>`).join("")}
             </div>
             <textarea id="review-text-${appointment.id}" rows="2" placeholder="Comentario opcional"></textarea>
             <button class="btn-outline" data-save-review="${appointment.id}">Enviar avaliacao</button>
@@ -589,6 +654,8 @@ function renderClientHistory() {
       </article>
     `;
   }).join("");
+
+  applyStagger(historyList, ".list-card");
 
   historyList.querySelectorAll("[data-save-review]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -741,7 +808,11 @@ function confirmBooking() {
   state.lastAppointmentId = appointment.id;
   state.selectedTime = null;
   document.getElementById("client-app").classList.add("hidden");
-  document.getElementById("client-confirmation").classList.remove("hidden");
+  const confirmationCard = document.getElementById("client-confirmation");
+  confirmationCard.classList.remove("hidden");
+  confirmationCard.classList.remove("success-pop");
+  void confirmationCard.offsetWidth;
+  confirmationCard.classList.add("success-pop");
   renderConfirmation(appointment);
   renderBarberDashboard();
   showToast("Agendamento salvo com sucesso.", "success");
@@ -839,9 +910,9 @@ function updateBarberKpis(date) {
     0
   );
 
-  document.getElementById("kpi-today-bookings").textContent = `${appointments.length}`;
-  document.getElementById("kpi-today-completed").textContent = `${completed.length}`;
-  document.getElementById("kpi-daily-commission").textContent = toMoney(commission);
+  animateMetric("kpi-today-bookings", appointments.length, (value) => `${Math.round(value)}`);
+  animateMetric("kpi-today-completed", completed.length, (value) => `${Math.round(value)}`);
+  animateMetric("kpi-daily-commission", commission, (value) => toMoney(value));
 }
 
 function renderBarberAgenda(date) {
@@ -880,6 +951,8 @@ function renderBarberAgenda(date) {
       </article>
     `;
   }).join("");
+
+  applyStagger(list, ".list-card");
 
   list.querySelectorAll("[data-barber-action]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -939,12 +1012,14 @@ function renderBarberReviews() {
     <article class="list-card">
       <div class="split-title">
         <strong>${review.clientName}</strong>
-        <span>${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</span>
+        <span>${"&#9733;".repeat(review.rating)}${"&#9734;".repeat(5 - review.rating)}</span>
       </div>
       <p class="muted">${review.serviceName} - ${toDateLabel(review.date)}</p>
       <p>${review.review || "Sem comentario"}</p>
     </article>
   `).join("");
+
+  applyStagger(container, ".list-card");
 }
 
 function renderBarberBlocks() {
@@ -971,6 +1046,8 @@ function renderBarberBlocks() {
     `)
     .join("");
 
+  applyStagger(blockList, ".list-card");
+
   blockList.querySelectorAll("[data-remove-block]").forEach((button) => {
     button.addEventListener("click", () => removeBarberBlock(button.getAttribute("data-remove-block")));
   });
@@ -996,6 +1073,8 @@ function renderBarberOffDays() {
       </article>
     `)
     .join("");
+
+  applyStagger(offdayList, ".list-card");
 
   offdayList.querySelectorAll("[data-remove-offday]").forEach((button) => {
     button.addEventListener("click", () => removeBarberOffDay(button.getAttribute("data-remove-offday")));
@@ -1101,11 +1180,21 @@ function renderBarberDashboard() {
 
 function switchRole(role) {
   state.role = role;
+  const clientModule = document.getElementById("module-cliente");
+  const barberModule = document.getElementById("module-barbeiro");
+  const targetModule = role === "cliente" ? clientModule : barberModule;
+
   document.querySelectorAll(".role-btn").forEach((button) => {
     button.classList.toggle("is-active", button.getAttribute("data-role") === role);
   });
-  document.getElementById("module-cliente").classList.toggle("hidden", role !== "cliente");
-  document.getElementById("module-barbeiro").classList.toggle("hidden", role !== "barbeiro");
+
+  clientModule.classList.toggle("hidden", role !== "cliente");
+  barberModule.classList.toggle("hidden", role !== "barbeiro");
+
+  targetModule.classList.remove("fade-in");
+  void targetModule.offsetWidth;
+  targetModule.classList.add("fade-in");
+  applyModuleLoading(targetModule.id, 180);
 }
 
 function showToast(message, tone = "info") {
@@ -1208,6 +1297,11 @@ function bindRoleSwitch() {
 async function init() {
   parseApiMode();
   ensureSeedData();
+
+  if (API_SETTINGS.enabled) {
+    showBootstrapSkeletons();
+  }
+
   const hydrated = await hydrateFromApi();
   bindRoleSwitch();
   bindClientEvents();
@@ -1219,6 +1313,7 @@ async function init() {
   document.getElementById("block-date").value = isoToday();
   document.getElementById("offday-date").value = isoToday();
   document.getElementById("barber-date-filter").value = isoToday();
+  applyFloatBrand();
 
   // Hook pronto para integracao com API futuramente.
   window.BARBERSAAS_CONFIG = {
@@ -1240,3 +1335,12 @@ async function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
+
+
+
+
+
+
+
+

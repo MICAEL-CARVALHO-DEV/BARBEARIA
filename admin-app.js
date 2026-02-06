@@ -1,4 +1,4 @@
-const STORAGE_KEYS = {
+﻿const STORAGE_KEYS = {
   services: "barbersaas_services",
   barbers: "barbersaas_barbers",
   clients: "barbersaas_clients",
@@ -181,6 +181,63 @@ function getClientLevel(totalCompletedCuts) {
   return sorted.find((level) => totalCompletedCuts >= level.minCuts) || LEVELS[0];
 }
 
+
+function renderSkeleton(containerId, count = 3) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = `<div class="skeleton-stack">${Array.from({ length: count }).map(() => "<div class='skeleton-card'></div>").join("")}</div>`;
+}
+
+function applyStagger(container, itemSelector) {
+  if (!container) return;
+  container.querySelectorAll(itemSelector).forEach((item, index) => {
+    item.classList.add("stagger-item");
+    item.style.setProperty("--stagger-index", `${index}`);
+  });
+}
+
+function animateMetric(target, value, formatter, duration = 720) {
+  const element = typeof target === "string" ? document.getElementById(target) : target;
+  if (!element) return;
+
+  const safeValue = Number(value || 0);
+  const startValue = Number(element.dataset.metricValue || 0);
+  const startAt = performance.now();
+
+  const tick = (now) => {
+    const progress = Math.min((now - startAt) / duration, 1);
+    const eased = 1 - ((1 - progress) ** 3);
+    const current = startValue + ((safeValue - startValue) * eased);
+    element.textContent = formatter(current);
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+      return;
+    }
+    element.dataset.metricValue = `${safeValue}`;
+  };
+
+  requestAnimationFrame(tick);
+}
+
+function showAdminSkeletons() {
+  [
+    "admin-upcoming",
+    "smart-reports",
+    "hourly-bars",
+    "business-insights",
+    "automation-log-list",
+    "admin-service-list",
+    "admin-barber-list",
+    "finance-list",
+    "admin-history-list",
+    "client-level-list"
+  ].forEach((id) => renderSkeleton(id, 3));
+}
+
+function applyFloatBrand() {
+  document.querySelectorAll(".brand").forEach((brand) => brand.classList.add("float-soft"));
+}
+
 function showToast(message, tone = "info") {
   const toast = document.getElementById("toast");
   toast.textContent = message;
@@ -195,10 +252,23 @@ function switchTab(tabName) {
   document.querySelectorAll(".nav-btn").forEach((button) => {
     button.classList.toggle("is-active", button.getAttribute("data-tab") === tabName);
   });
+
   document.querySelectorAll(".admin-tab").forEach((tab) => {
     tab.classList.add("hidden");
+    tab.classList.remove("tab-loading");
   });
-  document.getElementById(`tab-${tabName}`).classList.remove("hidden");
+
+  const target = document.getElementById(`tab-${tabName}`);
+  target.classList.remove("hidden");
+  target.classList.remove("fade-in");
+  void target.offsetWidth;
+  target.classList.add("fade-in");
+  target.classList.add("tab-loading");
+
+  window.clearTimeout(switchTab.timeoutRef);
+  switchTab.timeoutRef = window.setTimeout(() => {
+    target.classList.remove("tab-loading");
+  }, 180);
 }
 
 function uid(prefix) {
@@ -321,12 +391,12 @@ function renderKpis() {
     return date >= monthStart && date <= monthEnd;
   }).length;
 
-  document.getElementById("kpi-revenue-day").textContent = toMoney(dailyRevenue);
-  document.getElementById("kpi-revenue-week").textContent = toMoney(weeklyRevenue);
-  document.getElementById("kpi-revenue-month").textContent = toMoney(monthlyRevenue);
-  document.getElementById("kpi-services-count").textContent = `${monthlyCompleted.length}`;
-  document.getElementById("kpi-occupancy").textContent = `${Math.round(occupancyRate)}%`;
-  document.getElementById("kpi-new-clients").textContent = `${newClients}`;
+  animateMetric("kpi-revenue-day", dailyRevenue, (value) => toMoney(value));
+  animateMetric("kpi-revenue-week", weeklyRevenue, (value) => toMoney(value));
+  animateMetric("kpi-revenue-month", monthlyRevenue, (value) => toMoney(value));
+  animateMetric("kpi-services-count", monthlyCompleted.length, (value) => `${Math.round(value)}`);
+  animateMetric("kpi-occupancy", Math.round(occupancyRate), (value) => `${Math.round(value)}%`);
+  animateMetric("kpi-new-clients", newClients, (value) => `${Math.round(value)}`);
 }
 
 function renderUpcomingAppointments() {
@@ -354,6 +424,8 @@ function renderUpcomingAppointments() {
       <p class="muted">${toDateLabel(appointment.date)} ${appointment.time}</p>
     </article>
   `).join("");
+
+  applyStagger(container, ".list-card");
 }
 
 function renderGoalCard() {
@@ -405,6 +477,8 @@ function renderSmartReports() {
     <article class="report-card"><p>Barbeiro mais produtivo</p><strong>${topBarber ? topBarber[0] : "-"}</strong></article>
     <article class="report-card"><p>Cliente recorrente</p><strong>${topClient ? topClient[0].split("-")[0] : "-"}</strong></article>
   `;
+
+  applyStagger(reports, ".report-card");
 }
 
 function renderHourlyBars() {
@@ -432,6 +506,8 @@ function renderHourlyBars() {
       <strong>${toMoney(value)}</strong>
     </div>
   `).join("");
+
+  applyStagger(bars, ".bar-line");
 }
 
 function renderBusinessInsights() {
@@ -471,6 +547,7 @@ function renderBusinessInsights() {
   }
 
   container.innerHTML = insights.map((text) => `<article class="list-card"><p>${text}</p></article>`).join("");
+  applyStagger(container, ".list-card");
 }
 
 function renderServiceManagement() {
@@ -492,6 +569,8 @@ function renderServiceManagement() {
       <button class="btn-ghost danger" data-remove-service="${service.id}">Remover</button>
     </article>
   `).join("");
+
+  applyStagger(container, ".list-card");
 
   container.querySelectorAll("[data-remove-service]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -536,6 +615,8 @@ function renderBarberManagement() {
     `;
   }).join("");
 
+  applyStagger(container, ".list-card");
+
   container.querySelectorAll("[data-remove-barber]").forEach((button) => {
     button.addEventListener("click", () => {
       const barberId = button.getAttribute("data-remove-barber");
@@ -560,10 +641,10 @@ function renderFinance() {
     totals.Total += Number(appointment.servicePrice || 0);
   });
 
-  document.getElementById("fin-pix").textContent = toMoney(totals.Pix);
-  document.getElementById("fin-cash").textContent = toMoney(totals.Presencial);
-  document.getElementById("fin-card").textContent = toMoney(totals.Cartao);
-  document.getElementById("fin-total").textContent = toMoney(totals.Total);
+  animateMetric("fin-pix", totals.Pix, (value) => toMoney(value));
+  animateMetric("fin-cash", totals.Presencial, (value) => toMoney(value));
+  animateMetric("fin-card", totals.Cartao, (value) => toMoney(value));
+  animateMetric("fin-total", totals.Total, (value) => toMoney(value));
 
   if (!completed.length) {
     list.innerHTML = "<p class='empty'>Sem movimentacoes concluidas.</p>";
@@ -584,6 +665,8 @@ function renderFinance() {
       </article>
     `)
     .join("");
+
+  applyStagger(list, ".list-card");
 }
 
 function renderHistory() {
@@ -609,6 +692,8 @@ function renderHistory() {
         </article>
       `)
       .join("");
+
+    applyStagger(historyContainer, ".list-card");
   }
 
   const clients = getClients();
@@ -635,6 +720,8 @@ function renderHistory() {
       </article>
     `;
   }).join("");
+
+  applyStagger(levelContainer, ".list-card");
 }
 
 async function renderAutomationPanel() {
@@ -688,9 +775,9 @@ async function renderAutomationPanel() {
   }
 
   providerEl.textContent = provider;
-  confirmationEl.textContent = `${counts.confirmation}`;
-  reminderEl.textContent = `${counts.reminder}`;
-  postEl.textContent = `${counts.postService}`;
+  animateMetric(confirmationEl, counts.confirmation, (value) => `${Math.round(value)}`);
+  animateMetric(reminderEl, counts.reminder, (value) => `${Math.round(value)}`);
+  animateMetric(postEl, counts.postService, (value) => `${Math.round(value)}`);
 
   if (!logs.length) {
     logsEl.innerHTML = "<p class='empty'>Sem eventos de automacao ate o momento.</p>";
@@ -711,6 +798,8 @@ async function renderAutomationPanel() {
       ${event.error ? `<p class="event-error">Erro: ${event.error}</p>` : `<p class="event-success">Entrega: ${event.success ? "ok" : "falha"}</p>`}
     </article>
   `).join("");
+
+  applyStagger(logsEl, ".list-card");
 }
 
 function renderAll() {
@@ -871,6 +960,10 @@ function normalizeStatuses() {
 
 async function init() {
   parseApiMode();
+  if (API_SETTINGS.enabled) {
+    showAdminSkeletons();
+  }
+
   const hydrated = await hydrateFromApi();
   document.getElementById("admin-today").textContent = new Date().toLocaleDateString("pt-BR");
   normalizeStatuses();
@@ -882,6 +975,7 @@ async function init() {
   bindSearch();
   switchTab("dashboard");
   renderAll();
+  applyFloatBrand();
 
   window.setInterval(() => {
     void renderAutomationPanel();
@@ -904,3 +998,5 @@ async function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
+
