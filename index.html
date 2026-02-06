@@ -1,67 +1,233 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BarberShop | Agendamento</title>
+    <title>BARBERSAAS | Cliente e Barbeiro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="bg-orb orb-one"></div>
+    <div class="bg-orb orb-two"></div>
 
-    <button id="btn-logout-global" onclick="logout()" style="display:none;">🚪</button>
-    <div class="main-container">
-       <header><div class="logo">BARBER<span>SHOP</span></div></header>
-
-        <section id="tela-login" class="card">
-            <h2>✂️ Bem-vindo</h2>
-            <p>Entre para agendar seu horário</p>
-            <div class="input-group">
-                <input type="text" id="login-nome" placeholder="Seu Nome">
-                <input type="tel" id="login-tel" placeholder="Seu WhatsApp">
-            </div>
-            <button onclick="fazerLogin()" class="btn-confirmar">Entrar no Sistema</button>
-        </section>
-
-        <section id="tela-agendamento" class="card" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <main class="shell">
+        <header class="top-header">
             <div>
-                <span id="user-display-name" style="font-weight:bold; color:var(--primary); display:block;"></span>
+                <h1 class="brand">BARBER<span>SAAS</span></h1>
+                <p class="brand-subtitle">Enterprise edition for premium barbershops</p>
             </div>
-            <button onclick="toggleHistorico()" style="background:#333; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">Meus Cortes</button>
-        </div>
+            <a class="ghost-link" href="admin.html">Painel Admin</a>
+        </header>
 
-<h3 style="text-align:left;">✂️ Escolha o Serviço</h3>
-<div id="lista-servicos-cliente" class="servicos-cliente-grid"></div>
-
-<h3 style="text-align:left;">📅 Escolha o Dia</h3>
-<div id="calendario" class="calendar-grid"></div>
-
-<h3 style="text-align:left; margin-top:15px;">⏰ Horário</h3>
-<div id="grade-horarios" class="time-grid"></div>
-
-            <select id="metodo-pagamento" style="width:100%; padding:12px; margin-top:20px; background:#000; color:white; border:1px solid #333; border-radius:8px;">
-                <option value="Presencial">💵 Pagar na Barbearia</option>
-                <option value="Pix">📱 Pagar via Pix</option>
-            
-            </select>
-
-            <button class="btn-confirmar" onclick="confirmarAgendamento()">🚀 Finalizar Agendamento</button>
+        <section class="role-switch" aria-label="Modulo">
+            <button class="role-btn is-active" data-role="cliente">Cliente</button>
+            <button class="role-btn" data-role="barbeiro">Barbeiro</button>
         </section>
 
-        <section id="tela-pix" class="card" style="display:none;">
-            <h2 style="color:var(--success)">✅ Confirmado!</h2>
-            <p>Seu horário está reservado.</p>
-            <button onclick="enviarWhatsappConfirmacao()" class="btn-whatsapp">Avisar no WhatsApp</button>
-            <button onclick="location.reload()" style="background:none; border:none; color:#888; margin-top:15px; text-decoration:underline; cursor:pointer;">Voltar</button>
-        </section>
-    </div>
+        <section id="module-cliente" class="module-card fade-in">
+            <div id="client-login" class="flow-card">
+                <h2>Acesse sua conta cliente</h2>
+                <p class="muted">Entre com nome e WhatsApp para agendar com rapidez.</p>
+                <div class="field-grid">
+                    <label class="field">
+                        <span>Nome</span>
+                        <input id="client-name" type="text" placeholder="Ex: Gabriel Lima" maxlength="60">
+                    </label>
+                    <label class="field">
+                        <span>WhatsApp</span>
+                        <input id="client-phone" type="tel" placeholder="11999998888" maxlength="15">
+                    </label>
+                </div>
+                <button id="btn-client-login" class="btn-primary">Entrar e agendar</button>
+            </div>
 
-    <div id="conteudo-historico" class="hist-oculto">
-        <h2>Seu Histórico</h2>
-        <div id="lista-animada-hist"></div>
-        <button onclick="toggleHistorico()" class="btn-confirmar">Voltar</button>
-    </div>
+            <div id="client-app" class="hidden">
+                <article class="flow-card user-card">
+                    <div>
+                        <p class="eyebrow">Bem-vindo</p>
+                        <h3 id="client-greeting">Ola</h3>
+                        <p id="client-level" class="level-badge">Nivel Bronze</p>
+                        <p id="client-benefit" class="muted"></p>
+                    </div>
+                    <div class="inline-actions">
+                        <button id="btn-open-history" class="btn-outline">Historico</button>
+                        <button id="btn-client-logout" class="btn-ghost">Sair</button>
+                    </div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>1. Escolha o servico</h3>
+                    <div id="service-list" class="card-grid"></div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>2. Escolha o barbeiro</h3>
+                    <div id="barber-list" class="barber-grid"></div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>3. Escolha a data</h3>
+                    <div id="date-calendar" class="calendar-strip"></div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>4. Escolha o horario</h3>
+                    <div class="slot-block">
+                        <p class="slot-title">Manha</p>
+                        <div id="slots-morning" class="slot-grid"></div>
+                    </div>
+                    <div class="slot-block">
+                        <p class="slot-title">Tarde</p>
+                        <div id="slots-afternoon" class="slot-grid"></div>
+                    </div>
+                    <div class="slot-block">
+                        <p class="slot-title">Noite</p>
+                        <div id="slots-night" class="slot-grid"></div>
+                    </div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>5. Forma de pagamento</h3>
+                    <div class="payment-grid">
+                        <label class="pay-option is-active">
+                            <input type="radio" name="payment" value="Presencial" checked>
+                            <span>Presencial</span>
+                        </label>
+                        <label class="pay-option">
+                            <input type="radio" name="payment" value="Pix">
+                            <span>Pix</span>
+                        </label>
+                        <label class="pay-option">
+                            <input type="radio" name="payment" value="Cartao">
+                            <span>Cartao</span>
+                        </label>
+                    </div>
+                </article>
+
+                <article class="flow-card summary-card">
+                    <h3>Revisao do agendamento</h3>
+                    <div id="booking-summary" class="summary-lines"></div>
+                    <button id="btn-confirm-booking" class="btn-primary">Confirmar agendamento</button>
+                </article>
+            </div>
+
+            <div id="client-confirmation" class="hidden flow-card success-card">
+                <h2>Agendamento confirmado</h2>
+                <p class="muted">Tudo certo. Seu horario ja esta reservado com status pendente de validacao do barbeiro.</p>
+                <div id="confirmation-details" class="summary-lines"></div>
+                <div class="wa-actions">
+                    <button id="btn-wa-confirm" class="btn-whatsapp">WhatsApp: confirmacao</button>
+                    <button id="btn-wa-reminder" class="btn-outline">WhatsApp: lembrete 2h antes</button>
+                    <button id="btn-wa-post" class="btn-outline">WhatsApp: pos-atendimento</button>
+                </div>
+                <button id="btn-new-booking" class="btn-primary">Novo agendamento</button>
+            </div>
+
+            <div id="client-history" class="hidden flow-card">
+                <div class="split-title">
+                    <h3>Historico de cortes</h3>
+                    <button id="btn-close-history" class="btn-ghost">Fechar</button>
+                </div>
+                <div id="history-list" class="stack-list"></div>
+            </div>
+        </section>
+
+        <section id="module-barbeiro" class="module-card hidden fade-in">
+            <div id="barber-login" class="flow-card">
+                <h2>Login do barbeiro</h2>
+                <p class="muted">Acesse sua agenda e operacao diaria.</p>
+                <div class="field-grid">
+                    <label class="field">
+                        <span>Barbeiro</span>
+                        <select id="barber-login-select"></select>
+                    </label>
+                    <label class="field">
+                        <span>PIN</span>
+                        <input id="barber-login-pin" type="password" maxlength="6" placeholder="Ex: 1234">
+                    </label>
+                </div>
+                <button id="btn-barber-login" class="btn-primary">Entrar no modulo</button>
+            </div>
+
+            <div id="barber-app" class="hidden">
+                <article class="flow-card user-card">
+                    <div>
+                        <p class="eyebrow">Painel do barbeiro</p>
+                        <h3 id="barber-greeting">Barbeiro</h3>
+                        <p id="barber-rating" class="muted"></p>
+                    </div>
+                    <div class="inline-actions">
+                        <button id="btn-barber-logout" class="btn-ghost">Sair</button>
+                    </div>
+                </article>
+
+                <section class="kpi-grid compact">
+                    <article class="kpi-card">
+                        <p>Agenda de hoje</p>
+                        <strong id="kpi-today-bookings">0</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Concluidos hoje</p>
+                        <strong id="kpi-today-completed">0</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Comissao diaria</p>
+                        <strong id="kpi-daily-commission">R$ 0,00</strong>
+                    </article>
+                </section>
+
+                <article class="flow-card">
+                    <div class="split-title">
+                        <h3>Agenda do dia</h3>
+                        <input id="barber-date-filter" type="date">
+                    </div>
+                    <div id="barber-day-list" class="stack-list"></div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>Bloquear horario</h3>
+                    <div class="field-grid">
+                        <label class="field">
+                            <span>Data</span>
+                            <input id="block-date" type="date">
+                        </label>
+                        <label class="field">
+                            <span>Horario</span>
+                            <select id="block-time"></select>
+                        </label>
+                    </div>
+                    <label class="field">
+                        <span>Motivo (opcional)</span>
+                        <input id="block-reason" type="text" placeholder="Ex: compromisso pessoal">
+                    </label>
+                    <button id="btn-block-slot" class="btn-outline">Adicionar bloqueio</button>
+                    <div id="barber-blocks-list" class="stack-list mt"></div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>Definir dia de folga</h3>
+                    <div class="field-grid">
+                        <label class="field">
+                            <span>Data de folga</span>
+                            <input id="offday-date" type="date">
+                        </label>
+                    </div>
+                    <button id="btn-add-offday" class="btn-outline">Registrar folga</button>
+                    <div id="barber-offdays-list" class="stack-list mt"></div>
+                </article>
+
+                <article class="flow-card">
+                    <h3>Avaliacoes dos clientes</h3>
+                    <div id="barber-reviews" class="stack-list"></div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
     <script src="app.js"></script>
 </body>

@@ -1,86 +1,265 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barber Admin | Gestão Master</title>
+    <title>BARBERSAAS | Admin Enterprise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body class="admin-body">
+    <div class="bg-orb orb-one"></div>
+    <div class="bg-orb orb-two"></div>
 
-<nav class="admin-nav">
-    <button onclick="showTab('agenda')">📅 Agenda</button>
-    <button onclick="showTab('servicos')">✂️ Serviços</button>
-    <button onclick="showTab('financeiro')">💰 Caixa</button>
-</nav>
-
-<div class="dashboard-container">
-    <section id="tab-agenda" class="tab-content">
-        <header style="margin-bottom: 20px; text-align: center;">
-            <div class="logo" style="font-family: 'Oswald'; font-size: 2rem;">BARBER<span>CONTROL</span></div>
-            <div id="data-atual-topo" style="opacity: 0.6; font-size: 0.9rem;"></div>
-        </header>
-
-        <section class="card-admin meta-container">
-            <div class="meta-info">
-                <span>Meta do Dia: <strong>R$ 300,00</strong></span>
-                <span id="porcentagem-meta">0%</span>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div>
+                <h1 class="brand">BARBER<span>SAAS</span></h1>
+                <p class="brand-subtitle">Enterprise edition</p>
             </div>
-            <div class="progress-bar">
-                <div id="fill-meta" class="progress-fill" style="width: 0%"></div>
+
+            <nav class="admin-nav" aria-label="Navegacao admin">
+                <button class="nav-btn is-active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-btn" data-tab="services">Servicos</button>
+                <button class="nav-btn" data-tab="barbers">Barbeiros</button>
+                <button class="nav-btn" data-tab="finance">Financeiro</button>
+                <button class="nav-btn" data-tab="history">Historico</button>
+            </nav>
+
+            <div class="sidebar-foot">
+                <p class="muted">Modulo cliente/barbeiro</p>
+                <a class="ghost-link" href="index.html">Abrir operacao</a>
             </div>
-        </section>
+        </aside>
 
-        <section class="stats-row">
-            <div class="stat-card"><span id="faturamento-dia">R$ 0</span><p>Ganhos Hoje</p></div>
-            <div class="stat-card"><span id="total-cortes-stats">0</span><p>Atendimentos</p></div>
-        </section>
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div>
+                    <p class="eyebrow">Painel corporativo</p>
+                    <h2>Gestao inteligente para barbearias premium</h2>
+                </div>
+                <div class="topbar-meta">
+                    <input id="admin-search" type="search" placeholder="Buscar cliente, servico ou barbeiro...">
+                    <span id="admin-today" class="muted"></span>
+                </div>
+            </header>
 
-        <section class="card-admin">
-            <h3>📅 Histórico Mensal</h3>
-            <div id="calendario-trabalho" class="calendar-grid"></div>
-        </section>
+            <section id="tab-dashboard" class="admin-tab">
+                <div class="kpi-grid">
+                    <article class="kpi-card">
+                        <p>Receita diaria</p>
+                        <strong id="kpi-revenue-day">R$ 0,00</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Receita semanal</p>
+                        <strong id="kpi-revenue-week">R$ 0,00</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Receita mensal</p>
+                        <strong id="kpi-revenue-month">R$ 0,00</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Atendimentos</p>
+                        <strong id="kpi-services-count">0</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Taxa de ocupacao</p>
+                        <strong id="kpi-occupancy">0%</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Novos clientes</p>
+                        <strong id="kpi-new-clients">0</strong>
+                    </article>
+                </div>
 
-        <section class="agenda-section">
-            <h3>🚀 Próximos Clientes</h3>
-            <div id="lista-agendamentos-admin"></div>
-        </section>
-    </section>
+                <div class="admin-grid two-columns">
+                    <article class="flow-card">
+                        <div class="split-title">
+                            <h3>Proximos agendamentos</h3>
+                            <span class="muted">Agenda completa</span>
+                        </div>
+                        <div id="admin-upcoming" class="stack-list"></div>
+                    </article>
 
-    <section id="tab-servicos" class="tab-content" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-            <h3>✂️ Meus Serviços</h3>
-            <button class="btn-add" onclick="abrirModalServico()" style="background:var(--primary); border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">+ Novo</button>
-        </div>
-        <div id="lista-servicos-admin"></div>
-    </section>
+                    <article class="flow-card goal-card">
+                        <div class="split-title">
+                            <h3>Meta mensal</h3>
+                            <button id="btn-save-goal" class="btn-outline">Atualizar meta</button>
+                        </div>
+                        <div class="goal-wrap">
+                            <div id="goal-ring" class="goal-ring"><span id="goal-percent">0%</span></div>
+                            <div class="goal-info">
+                                <label class="field">
+                                    <span>Meta (R$)</span>
+                                    <input id="goal-input" type="number" min="1000" step="100" placeholder="20000">
+                                </label>
+                                <p id="goal-progress-text" class="muted"></p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
 
-    <section id="tab-financeiro" class="tab-content" style="display:none;">
-        <h3>💰 Caixa do Dia</h3>
-        <div class="finance-grid">
-            <div class="finance-card"><p>💵 Dinheiro</p><h4 id="valor-dinheiro">R$ 0,00</h4></div>
-            <div class="finance-card"><p>📱 Pix</p><h4 id="valor-pix">R$ 0,00</h4></div>
-            <div class="finance-card"><p>💳 Cartão</p><h4 id="valor-cartao">R$ 0,00</h4></div>
-        </div>
-        <div class="total-geral">
-            <h3>Total: <span id="total-geral-caixa">R$ 0,00</span></h3>
-            <button class="btn-cancel" onclick="zerarDados()" style="margin-top:15px; width: 100%;">Zerar Caixa</button>
-        </div>
-        <div id="historico-financeiro-lista" style="margin-top:20px;"></div>
-    </section>
-</div>
+                <div class="admin-grid two-columns">
+                    <article class="flow-card">
+                        <h3>Relatorios inteligentes</h3>
+                        <div id="smart-reports" class="report-grid"></div>
+                    </article>
 
-<div id="modal-servico" class="overlay-login" style="display:none;">
-    <div class="card-modal">
-        <h3>Novo Serviço</h3>
-        <input type="text" id="srv-nome" placeholder="Nome do Serviço">
-        <input type="number" id="srv-preco" placeholder="Preço (Ex: 35)">
-        <button class="btn-save" onclick="salvarServico()">Salvar</button>
-        <button class="btn-cancel" onclick="fecharModalServico()" style="margin-top:10px;">Cancelar</button>
+                    <article class="flow-card">
+                        <h3>Horarios mais lucrativos</h3>
+                        <div id="hourly-bars" class="bar-chart"></div>
+                    </article>
+                </div>
+
+                <article class="flow-card">
+                    <h3>Sugestoes de negocio</h3>
+                    <div id="business-insights" class="stack-list"></div>
+                </article>
+
+                <article class="flow-card">
+                    <div class="split-title">
+                        <h3>Automacao WhatsApp</h3>
+                        <button id="btn-refresh-automation" class="btn-outline">Atualizar</button>
+                    </div>
+                    <div id="automation-kpis" class="automation-kpis">
+                        <article class="mini-kpi">
+                            <p>Provider</p>
+                            <strong id="automation-provider">-</strong>
+                        </article>
+                        <article class="mini-kpi">
+                            <p>Confirmacoes</p>
+                            <strong id="automation-confirmation-count">0</strong>
+                        </article>
+                        <article class="mini-kpi">
+                            <p>Lembretes</p>
+                            <strong id="automation-reminder-count">0</strong>
+                        </article>
+                        <article class="mini-kpi">
+                            <p>Pos-servico</p>
+                            <strong id="automation-post-count">0</strong>
+                        </article>
+                    </div>
+                    <div id="automation-log-list" class="stack-list"></div>
+                </article>
+            </section>
+
+            <section id="tab-services" class="admin-tab hidden">
+                <div class="admin-grid two-columns">
+                    <article class="flow-card">
+                        <div class="split-title">
+                            <h3>Gestao de servicos</h3>
+                            <span class="muted">Catalogo comercial</span>
+                        </div>
+                        <div id="admin-service-list" class="stack-list"></div>
+                    </article>
+                    <article class="flow-card">
+                        <h3>Novo servico</h3>
+                        <div class="field-grid">
+                            <label class="field">
+                                <span>Nome</span>
+                                <input id="service-name" type="text" placeholder="Ex: Corte Executivo">
+                            </label>
+                            <label class="field">
+                                <span>Duracao (min)</span>
+                                <input id="service-duration" type="number" min="15" step="5" placeholder="40">
+                            </label>
+                            <label class="field full-width">
+                                <span>Descricao</span>
+                                <input id="service-description" type="text" placeholder="Acabamento premium com consultoria de estilo">
+                            </label>
+                            <label class="field">
+                                <span>Preco (R$)</span>
+                                <input id="service-price" type="number" min="1" step="0.01" placeholder="85.00">
+                            </label>
+                        </div>
+                        <button id="btn-add-service" class="btn-primary">Salvar servico</button>
+                    </article>
+                </div>
+            </section>
+
+            <section id="tab-barbers" class="admin-tab hidden">
+                <div class="admin-grid two-columns">
+                    <article class="flow-card">
+                        <div class="split-title">
+                            <h3>Gestao de barbeiros</h3>
+                            <span class="muted">Equipe e performance</span>
+                        </div>
+                        <div id="admin-barber-list" class="stack-list"></div>
+                    </article>
+                    <article class="flow-card">
+                        <h3>Novo barbeiro</h3>
+                        <div class="field-grid">
+                            <label class="field">
+                                <span>Nome</span>
+                                <input id="barber-name" type="text" placeholder="Ex: Ricardo Silva">
+                            </label>
+                            <label class="field">
+                                <span>Especialidade</span>
+                                <input id="barber-specialty" type="text" placeholder="Fade, barba desenhada">
+                            </label>
+                            <label class="field">
+                                <span>Comissao (%)</span>
+                                <input id="barber-commission" type="number" min="5" max="90" placeholder="40">
+                            </label>
+                            <label class="field">
+                                <span>PIN de acesso</span>
+                                <input id="barber-pin" type="text" maxlength="6" placeholder="1234">
+                            </label>
+                            <label class="field full-width">
+                                <span>URL da foto</span>
+                                <input id="barber-photo" type="url" placeholder="https://...">
+                            </label>
+                        </div>
+                        <button id="btn-add-barber" class="btn-primary">Salvar barbeiro</button>
+                    </article>
+                </div>
+            </section>
+
+            <section id="tab-finance" class="admin-tab hidden">
+                <div class="kpi-grid compact">
+                    <article class="kpi-card">
+                        <p>Pix</p>
+                        <strong id="fin-pix">R$ 0,00</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Dinheiro</p>
+                        <strong id="fin-cash">R$ 0,00</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Cartao</p>
+                        <strong id="fin-card">R$ 0,00</strong>
+                    </article>
+                    <article class="kpi-card">
+                        <p>Total</p>
+                        <strong id="fin-total">R$ 0,00</strong>
+                    </article>
+                </div>
+
+                <article class="flow-card">
+                    <h3>Movimentacoes</h3>
+                    <div id="finance-list" class="stack-list"></div>
+                </article>
+            </section>
+
+            <section id="tab-history" class="admin-tab hidden">
+                <div class="admin-grid two-columns">
+                    <article class="flow-card">
+                        <h3>Historico completo de atendimentos</h3>
+                        <div id="admin-history-list" class="stack-list"></div>
+                    </article>
+                    <article class="flow-card">
+                        <h3>Sistema de nivel de clientes</h3>
+                        <div id="client-level-list" class="stack-list"></div>
+                    </article>
+                </div>
+            </section>
+        </main>
     </div>
-</div>
 
-<script src="admin-app.js"></script>
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <script src="admin-app.js"></script>
 </body>
 </html>
